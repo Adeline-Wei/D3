@@ -19,7 +19,7 @@
 	
 			var dataset;
 
-			var w = 1000;
+			var w = 1500;
 			var h = 200;
 			var barPadding = 1;
 
@@ -43,18 +43,28 @@
 					.data(dataset.data)
 					.enter()
 					.append("rect")
-					.attr("x", function(d, i){
-						return i * (w / dataset.data.length);
+					.attr({
+						x: function(d, i) { return i * (w / dataset.data.length); },
+						y: function(d) { return h - d[2] * 2; },
+						width: w / dataset.data.length - barPadding,
+						height: function(d, i) { return d[2] * 2 },
+						fill: function(d) { return "rgb(0, 0, " + (d[2] * 4) + ")"; }
+					});
+
+				svg.selectAll("text")
+					.data(dataset.data)
+					.enter()
+					.append("text")
+					.text(function(d){
+						return d[2];
 					})
-					.attr("y", function(d){
-						return h - d[2] * 2;
-					})
-					.attr("width", w / dataset.data.length - barPadding)
-					.attr("height", function(d, i){
-						return d[2] * 2;
-					})
-					.attr("fill", function(d){
-						return "rgb(0, 0, " + (d[2] * 4) + ")";
+					.attr({
+						x: function(d, i) { return i * (w / dataset.data.length) + (w / dataset.data.length - barPadding) / 2; },
+						y: function(d) { return h - d[2] * 2 + 15; },
+						"font-family": "sans-serif",
+						"font-size": "10px",
+						"fill": "white"
+						// "text-anchor": "middle"
 					});
 			};
 		</script>
