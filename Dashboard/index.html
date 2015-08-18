@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3 Practice</title>
+		<script type="text/javascript" src="js/d3/d3.js"></script>
+		<style>
+			div.bar {
+				display: inline-block;
+				width: 20px;	
+				height: 75px;
+				background-color: teal;
+			}
+		</style>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+	
+			var dataset;
+
+			var w = 1000;
+			var h = 200;
+			var barPadding = 1;
+
+			d3.json("pm25-medium.json", function(error, data){
+				if (error) {
+					console.log(error);
+				} else {
+					dataset = data;
+					generateVis();
+				}
+			});
+
+			function generateVis() {
+
+				var svg = d3.select("body")
+					.append("svg")
+					.attr("width", w)
+					.attr("height", h);
+
+				svg.selectAll("rect")
+					.data(dataset.data)
+					.enter()
+					.append("rect")
+					.attr("x", function(d, i){
+						return i * (w / dataset.data.length);
+					})
+					.attr("y", function(d){
+						return h - d[2] * 2;
+					})
+					.attr("width", w / dataset.data.length - barPadding)
+					.attr("height", function(d, i){
+						return d[2] * 2;
+					})
+					.attr("fill", function(d){
+						return "rgb(0, 0, " + (d[2] * 4) + ")";
+					});
+			};
+		</script>
+	</body>
+</html>

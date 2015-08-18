@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D3 Practice</title>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
+<style>
+div.bar {
+display: inline-block;
+width: 20px;
+height: 75px;
+background-color: teal;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+var dataset;
+var w = 500;
+var h = 100;
+d3.json("pm25-min.json", function(error, data){
+if (error) {
+console.log(error);
+} else {
+dataset = data;
+generateVis();
+}
+});
+function generateVis() {
+console.log("generateVis");
+var svg = d3.select("body")
+.append("svg")
+.attr("width", w)
+.attr("height", h);
+console.log(dataset);
+svg.selectAll("rect")
+.data(dataset.data)
+.enter()
+.append("rect")
+.attr("x", function(d,i) {return (i*25);} )
+.attr("y", 0)
+.attr("fill", d3.scale.category10())
+.attr("width", 20)
+.attr("height", 100);
+};
+</script>
+</body>
+</html>
