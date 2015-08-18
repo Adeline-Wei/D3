@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Graphic.js</title>
+		<script type="text/javascript" src="js/d3/d3.js"></script>
+		<script type="text/javascript" src="js/queue.js"></script>
+		<script type="text/javascript" src="js/crossfilter.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+		
+			queue()
+    			.defer(d3.json, "pm25-medium.json")
+    			.await(makeGraphs);
+			
+			function makeGraphs(error, pm25Json){
+				
+				var dataset = pm25Json.data;
+				ndx = crossfilter(dataset);
+				// GUID, date, humidity, temperature, pm25, geox, geoy
+				var guidDim = ndx.dimension(function(d) { return d["GUID"]; });
+				console.log(guidDim);
+			};
+
+		</script>
+	</body>
+</html>
