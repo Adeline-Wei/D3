@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3 Practice</title>
+		<script type="text/javascript" src="js/d3/d3.js"></script>
+		<style>
+			div.bar {
+				display: inline-block;
+				width: 20px;	
+				height: 75px;
+				background-color: teal;
+			}
+		</style>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+	
+			var dataset;
+
+			var w = 1500;
+			var h = 200;
+			var barPadding = 1;
+
+			d3.json("pm25-medium.json", function(error, data){
+				if (error) {
+					console.log(error);
+				} else {
+					dataset = data;
+					generateVis();
+				}
+			});
+
+			function generateVis() {
+
+				var yScale = d3.scale.linear()
+									.domain([0, d3.max(dataset.data, function(d){ return d[2]; })])
+									.range([0, h]);
+
+				var svg = d3.select("body")
+					.append("svg")
+					.attr("width", w)
+					.attr("height", h);
+
+				svg.selectAll("rect")
+					.data(dataset.data)
+					.enter()
+					.append("rect")
+					.attr({
+						x: function(d, i) { return i * (w / dataset.data.length); },
+						y: function(d) { return h - yScale(d[2]); },
+						width: w / dataset.data.length - barPadding,
+						height: function(d, i) { return yScale(d[2]); },
+						fill: function(d) { return "rgb(0, 0, " + d[2] * 4 + ")"; }
+					});
+
+				svg.selectAll("text")
+					.data(dataset.data)
+					.enter()
+					.append("text")
+					.text(function(d){
+						return d[2];
+					})
+					.attr({
+						x: function(d, i) { return i * (w / dataset.data.length) + (w / dataset.data.length - barPadding) / 2; },
+						y: function(d) { return h - yScale(d[2]) + 15; },
+						"font-family": "sans-serif",
+						"font-size": "10px",
+						"fill": "white"
+					});
+			};
+		</script>
+	</body>
+</html>
