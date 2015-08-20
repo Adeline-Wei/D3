@@ -11,12 +11,11 @@
 		<script type="text/javascript">
 		
 			var dataset;
-			// var ndx;
-			// var yearAndMonthDim;
 
 			var w = 1000;
 			var h = 300;
 			var barPadding = 1;
+			// var xScale;
 
 			queue()
     			.defer(d3.json, "pm25-2014.json")
@@ -32,23 +31,27 @@
 				var numByYearAndMonth = yearAndMonthDim.group();
 				var totalConcentrationYearAndMonth = numByYearAndMonth.reduceSum(function(d) { return d[2]; }).all();
 
+				var xScale = d3.scale.ordinal()
+								.domain(d3.range(numByYearAndMonth.size()))
+								.rangeBands([0, w], 0.05);
+
 				var yScale = d3.scale.linear()
-									.domain([0, d3.max(totalConcentrationYearAndMonth, function(d) { return d.value; })])
-									.range([0, 100]);
+								.domain([0, d3.max(totalConcentrationYearAndMonth, function(d) { return d.value; })])
+								.range([0, 100]);
 
 				var svg = d3.select("body")
-					.append("svg")
-					.attr("width", w)
-					.attr("height", h);
+							.append("svg")
+							.attr("width", w)
+							.attr("height", h);
 
 				svg.selectAll("rect")
 					.data(totalConcentrationYearAndMonth)
 					.enter()
 					.append("rect")
 					.attr({
-						x: function(d, i) { return i * (w / numByYearAndMonth.size()); },
+						x: function(d, i) { return xScale(i); },
 						y: function(d) { if(d.value) return h - yScale(d.value); else return h; },
-						width: w / numByYearAndMonth.size() - barPadding,
+						width: xScale.rangeBand(),
 						height: function(d) { if(d.value) { console.log(d.key); return yScale(d.value); } else { console.log(d.key); return 0; } },
 						fill: function(d) { if(d.value) return "rgb(0, 0, " + Math.round(yScale(d.value)) + ")"; else return "rbg(0, 0, 0)"; }
 					});
@@ -61,7 +64,7 @@
 						return d.value;
 					})
 					.attr({
-						x: function(d, i) { return i * (w / numByYearAndMonth.size()) + (w / numByYearAndMonth.size() - barPadding) / 2; },
+						x: function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
 						y: function(d) { return h - yScale(d.value) + 15; },
 						"font-family": "sans-serif",
 						"font-size": "10px",
