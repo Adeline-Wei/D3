@@ -15,7 +15,6 @@
 			var w = 1000;
 			var h = 300;
 			var barPadding = 1;
-			// var xScale;
 
 			queue()
     			.defer(d3.json, "pm25-2014.json")
@@ -35,9 +34,14 @@
 								.domain(d3.range(numByYearAndMonth.size()))
 								.rangeBands([0, w], 0.05);
 
+				// TODO: try to use ordinal, range and rangeBands
 				var yScale = d3.scale.linear()
 								.domain([0, d3.max(totalConcentrationYearAndMonth, function(d) { return d.value; })])
 								.range([0, 100]);
+
+				var xAxis = d3.svg.axis()
+								.scale(xScale)
+								.orient("bottom");
 
 				var svg = d3.select("body")
 							.append("svg")
@@ -56,7 +60,7 @@
 						fill: function(d) { if(d.value) return "rgb(0, 0, " + Math.round(yScale(d.value)) + ")"; else return "rbg(0, 0, 0)"; }
 					});
 
-					svg.selectAll("text")
+				svg.selectAll("text")
 					.data(totalConcentrationYearAndMonth)
 					.enter()
 					.append("text")
@@ -71,6 +75,8 @@
 						"fill": "white",
 						"text-anchor": "middle"
 					});
+				
+				svg.append("g").call(xAxis);
 
 			};
 
