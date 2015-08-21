@@ -6,6 +6,19 @@
 		<script type="text/javascript" src="js/d3/d3.js"></script>
 		<script type="text/javascript" src="js/queue.js"></script>
 		<script type="text/javascript" src="js/crossfilter.js"></script>
+		<style>
+			.axis path, 
+			.axis line {
+				<!-- fill: none; -->
+				stroke: balck;
+				shape-rendering: crispEdges;
+			}
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+				fill: olive;
+			}
+		</style>
 	</head>
 	<body>
 		<script type="text/javascript">
@@ -76,7 +89,10 @@
 						"text-anchor": "middle"
 					});
 				
-				svg.append("g").call(xAxis);
+				svg.append("g")
+					.attr("class", "axis")
+					.attr("transform", "translate(0,"+(h-barPadding)+")")
+					.call(xAxis);
 
 			};
 
