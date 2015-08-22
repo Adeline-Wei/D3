@@ -6,7 +6,7 @@
 		<script type="text/javascript" src="js/d3/d3.js"></script>
 		<script type="text/javascript" src="js/queue.js"></script>
 		<script type="text/javascript" src="js/crossfilter.js"></script>
-		<style>
+		<style type="text/css">
 			.axis path, 
 			.axis line {
 				<!-- fill: none; -->
@@ -27,7 +27,7 @@
 
 			var w = 1000;
 			var h = 300;
-			var barPadding = 1;
+			var padding = 3;
 
 			queue()
     			.defer(d3.json, "pm25-2014.json")
@@ -37,6 +37,7 @@
 				
 				dataset = pm25Json.data;
 				var ndx = crossfilter(dataset);
+				var paddingWithAxes = 30;
 
 				// 0:Location, 1:date, 2:pm25, 3:unit
 				var yearAndMonthDim = ndx.dimension(function(d) { return d[1].substring(0, 7) });	// 用【年+月】來切	
@@ -50,11 +51,17 @@
 				// TODO: try to use ordinal, range and rangeBands
 				var yScale = d3.scale.linear()
 								.domain([0, d3.max(totalConcentrationYearAndMonth, function(d) { return d.value; })])
-								.range([0, 100]);
+								.range([0, h - paddingWithAxes]);
 
 				var xAxis = d3.svg.axis()
 								.scale(xScale)
-								.orient("bottom");
+								.orient("bottom")
+								.ticks(5);
+
+				var yAxis = d3.svg.axis()
+								.scale(yScale)
+								.orient("left")
+								.ticks(5);
 
 				var svg = d3.select("body")
 							.append("svg")
@@ -67,7 +74,7 @@
 					.append("rect")
 					.attr({
 						x: function(d, i) { return xScale(i); },
-						y: function(d) { if(d.value) return h - yScale(d.value); else return h; },
+						y: function(d) { if(d.value) return h - yScale(d.value) - paddingWithAxes; else return h - paddingWithAxes; },
 						width: xScale.rangeBand(),
 						height: function(d) { if(d.value) { console.log(d.key); return yScale(d.value); } else { console.log(d.key); return 0; } },
 						fill: function(d) { if(d.value) return "rgb(0, 0, " + Math.round(yScale(d.value)) + ")"; else return "rbg(0, 0, 0)"; }
@@ -82,17 +89,24 @@
 					})
 					.attr({
 						x: function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
-						y: function(d) { return h - yScale(d.value) + 15; },
+						y: function(d) { return h - yScale(d.value) - paddingWithAxes + 15; },
 						"font-family": "sans-serif",
 						"font-size": "10px",
 						"fill": "white",
 						"text-anchor": "middle"
 					});
+
 				
+
 				svg.append("g")
 					.attr("class", "axis")
-					.attr("transform", "translate(0,"+(h-barPadding)+")")
+					.attr("transform", "translate(0," + (h - paddingWithAxes - padding) + ")")
 					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "axis")
+					.attr("transform", "translate(" + padding + ",0)")
+					.call(yAxis);
 
 			};
 
