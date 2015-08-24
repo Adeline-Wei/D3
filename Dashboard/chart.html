@@ -40,7 +40,6 @@
 				dataset = pm25Json.data;
 				var ndx = crossfilter(dataset);
 				var padding = 40;
-				// var bottomPadding = 30;
 
 				// 0:Location, 1:date, 2:pm25, 3:unit
 				var yearAndMonthDim = ndx.dimension(function(d) { return d[1].substring(0, 7) });	// 用【年+月】來切	
@@ -58,8 +57,8 @@
 
 				var xAxis = d3.svg.axis()
 								.scale(xScale)
-								.orient("bottom")
-								.ticks(5);
+								.tickFormat(function(d) { return totalConcentrationYearAndMonth[d].key; })
+								.orient("bottom");
 
 				var yAxis = d3.svg.axis()
 								.scale(yScale)
@@ -107,7 +106,7 @@
 
 				svg.append("g")
 					.attr("class", "axis")
-					.attr("transform", "translate(" + padding + ","+0+")")
+					.attr("transform", "translate(" + padding + "," + 0 + ")")
 					.call(yAxis);
 
 			};
